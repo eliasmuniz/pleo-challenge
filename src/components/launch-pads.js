@@ -6,6 +6,8 @@ import Error from "./error";
 import Breadcrumbs from "./breadcrumbs";
 import LoadMoreButton from "./load-more-button";
 import { useSpaceXPaginated } from "../utils/use-space-x";
+import { useFavorites } from "../context/favorite";
+import { Star } from "react-feather";
 
 const PAGE_SIZE = 12;
 
@@ -41,7 +43,24 @@ export default function LaunchPads() {
   );
 }
 
-function LaunchPadItem({ launchPad }) {
+export function LaunchPadItem({ launchPad }) {
+
+  const [{ pads }, { addPad, removePad }] = useFavorites();
+
+  function handleAddFavorite(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    addPad(launchPad);
+  }
+
+  function handleRemoveFavorite(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    removePad(launchPad.site_id);
+  }
+
   return (
     <Box
       as={Link}
@@ -73,6 +92,13 @@ function LaunchPadItem({ launchPad }) {
           >
             {launchPad.attempted_launches} attempted &bull;{" "}
             {launchPad.successful_launches} succeeded
+          </Box>
+          <Box marginLeft="auto">
+            {pads.has(launchPad.site_id) ? (
+              <Star fill="gold" style={{color: "gold", fontSize: "20px"}} onClick={handleRemoveFavorite}> </Star>
+            ) : (
+              <Star style={{color: "gray", fontSize: "20px"}} onClick={handleAddFavorite}></Star>
+            )}
           </Box>
         </Box>
 

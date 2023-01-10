@@ -1,13 +1,23 @@
 import React from "react";
-import { Badge, Box, Image, SimpleGrid, Text, Flex } from "@chakra-ui/core";
+import {
+  Badge,
+  Box,
+  Image,
+  SimpleGrid,
+  Text,
+  Flex,
+  Button,
+} from "@chakra-ui/core";
 import { format as timeAgo } from "timeago.js";
 import { Link } from "react-router-dom";
+import { Star } from "react-feather";
 
 import { useSpaceXPaginated } from "../utils/use-space-x";
 import { formatDate } from "../utils/format-date";
 import Error from "./error";
 import Breadcrumbs from "./breadcrumbs";
 import LoadMoreButton from "./load-more-button";
+import { useFavorites } from "../context/favorite";
 
 const PAGE_SIZE = 12;
 
@@ -20,7 +30,6 @@ export default function Launches() {
       sort: "launch_date_utc",
     }
   );
-  console.log(data, error);
   return (
     <div>
       <Breadcrumbs
@@ -46,6 +55,21 @@ export default function Launches() {
 }
 
 export function LaunchItem({ launch }) {
+  const [{ launches }, { addLaunch, removeLaunch }] = useFavorites();
+
+  function handleAddFavorite(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    addLaunch(launch);
+  }
+
+  function handleRemoveFavorite(event) {
+    event.preventDefault();
+    event.stopPropagation();
+
+    removeLaunch(launch.flight_number);
+  }
+
   return (
     <Box
       as={Link}
@@ -98,6 +122,14 @@ export function LaunchItem({ launch }) {
             ml="2"
           >
             {launch.rocket.rocket_name} &bull; {launch.launch_site.site_name}
+          </Box>
+          <Box marginLeft="auto">
+            {launches.has(launch.flight_number) ? (
+
+              <Star fill="gold" style={{color: "gold", fontSize: "20px"}} onClick={handleRemoveFavorite}> </Star>
+            ) : (
+              <Star style={{color: "gray", fontSize: "20px"}} onClick={handleAddFavorite}></Star>
+            )}
           </Box>
         </Box>
 

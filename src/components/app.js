@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import { Flex, Text } from "@chakra-ui/core";
 
@@ -7,8 +7,16 @@ import Launch from "./launch";
 import Home from "./home";
 import LaunchPads from "./launch-pads";
 import LaunchPad from "./launch-pad";
+import { useFavorites } from "../context/favorite";
+import { FavoriteDrawer } from "./favorites";
+import { Star } from "react-feather";
 
 export default function App() {
+  const [{ launches, pads }] = useFavorites();
+
+  console.log("launches", launches);
+  console.log("pads", pads);
+
   return (
     <div>
       <NavBar />
@@ -24,24 +32,31 @@ export default function App() {
 }
 
 function NavBar() {
+  const [showFavorites, toggleFavorites] = useState(false);
+
+
   return (
-    <Flex
-      as="nav"
-      align="center"
-      justify="space-between"
-      wrap="wrap"
-      padding="6"
-      bg="gray.800"
-      color="white"
-    >
-      <Text
-        fontFamily="mono"
-        letterSpacing="2px"
-        fontWeight="bold"
-        fontSize="lg"
+    <>
+      <Flex
+        as="nav"
+        align="center"
+        justify="space-between"
+        wrap="wrap"
+        padding="6"
+        bg="gray.800"
+        color="white"
       >
-        ¡SPACE·R0CKETS!
-      </Text>
-    </Flex>
+        <Text
+          fontFamily="mono"
+          letterSpacing="2px"
+          fontWeight="bold"
+          fontSize="lg"
+        >
+          ¡SPACE·R0CKETS!
+        </Text>
+        <Star fill="gold" stroke="gold" onClick={()=> toggleFavorites(true)} />
+      </Flex>
+      <FavoriteDrawer onClose={() => toggleFavorites(false)} isOpen={showFavorites} />
+    </>
   );
 }
